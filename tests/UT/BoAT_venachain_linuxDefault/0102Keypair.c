@@ -14,10 +14,9 @@
  * limitations under the License.
  *****************************************************************************/
 #include "tcase_venachain.h"
-#define EXCEED_STR_MAX_LEN 4097
 
-#define TEST_EIP155_COMPATIBILITY   BOAT_FALSE
-#define TEST_VENACHAIN_CHAIN_ID      300
+
+
 #define TEST_GAS_LIMIT              "0x6691B7"
 #define TEST_GAS_PRICE              "0x4A817C800"
 #define TEST_IS_SYNC_TX             BOAT_TRUE
@@ -25,24 +24,6 @@
 
 BUINT8 g_binFormatKey[32];
 
-BOAT_RESULT check_venachain_wallet(BoatVenachainWallet *wallet_ptr)
-{
-    BOAT_RESULT result = BOAT_SUCCESS;
-
-	result = strncmp(wallet_ptr->account_info.prikeyCtx., g_venachain_private_key_buf, strlen(venachain_private_key_buf));
-    if (result != 0) 
-    {
-        return result;
-    }
-	
-    result = strncmp(wallet_ptr->network_info.node_url_str, TEST_VENACHAIN_NODE_URL, strlen(TEST_VENACHAIN_NODE_URL));
-    if (result != 0)
-    {
-        return result;
-    }
-
-    return BOAT_SUCCESS;
-}
 
 BoatKeypairPriKeyCtx_config get_venachain_keypair_settings()
 {
@@ -67,30 +48,17 @@ BoatKeypairPriKeyCtx_config get_venachain_keypair_settings()
     return g_keypair_config;
 }
 
-BoatVenachainNetworkConfig get_venachain_network_settings()
-{
-    g_venachain_network_config.chain_id             = TEST_VENACHAIN_CHAIN_ID;
-    g_venachain_network_config.eip155_compatibility = TEST_EIP155_COMPATIBILITY;
-    strncpy(g_venachain_network_config.node_url_str, TEST_VENACHAIN_NODE_URL, BOAT_VENACHAIN_NODE_URL_MAX_LEN - 1);
 
-    return g_venachain_network_config;
-}
 
 BOAT_RESULT check_venachain_keypairCtx(BoatKeypairPriKeyCtx *keypair2Ctx,BUINT8 keypair1Index,BCHAR *keypair1Name,BoatKeypairPriKeyCtx_config *keypair1Config )
 {
     BOAT_RESULT ret = BOAT_ERROR;
 
-    if(keypair2Ctx->keypair_index != keypair1Index)
-    {
-        return ret;
-    }
-
-    if((0 != strncmp(keypair2Ctx->keypair_name,keypair1Name,strlen(keypair1Name))) || (strlen(keypair2Ctx->keypair_name) != strlen(keypair1Name)))
-    {
-        return ret;
-    }
-
-    if((keypair2Ctx->prikey_format != keypair1Config->prikey_format) || (keypair2Ctx->prikey_type != keypair1Config->prikey_type))
+    if((keypair2Ctx->keypair_index != keypair1Index) || \
+        (0 != strncmp(keypair2Ctx->keypair_name,keypair1Name,strlen(keypair1Name))) || \
+        (strlen(keypair2Ctx->keypair_name) != strlen(keypair1Name)) || \
+        (keypair2Ctx->prikey_format != keypair1Config->prikey_format) || \
+        (keypair2Ctx->prikey_type != keypair1Config->prikey_type))
     {
         return ret;
     }
@@ -129,7 +97,7 @@ BOAT_RESULT check_venachain_keypair_in_keypairList(BoatKeypairPriKeyCtx *keypair
         return ret;
     }
 
-    if((0 != strncmp(keypair_list->keypairs[index].prikeyCtx.keypair_name,keypair->keypair_name,strlen(keypair->keypair_name))) || (strlen(keypair_list->keypairs[index].prikeyCtx.keypair_name,keypair->keypair_name) != strlen(keypair->keypair_name)))
+    if((0 != strncmp(keypair_list->keypairs[index].prikeyCtx.keypair_name,keypair->keypair_name,strlen(keypair->keypair_name))) || (strlen(keypair_list->keypairs[index].prikeyCtx.keypair_name) != strlen(keypair->keypair_name)))
     {
         return ret;
     }
