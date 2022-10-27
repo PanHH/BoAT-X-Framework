@@ -86,6 +86,409 @@ START_TEST(test_005InitWallet_0001InitWalletSuccessOneTimeKeypairOneTimeNetwork)
 END_TEST
 
 
+START_TEST(test_005InitWallet_0002InitWalletSuccessOneTimeKeypairPersistNetwork) 
+{
+    BOAT_RESULT ret;
+
+    BOAT_RESULT keypair_index;
+    BoatKeypairPriKeyCtx_config keypair_config;
+
+    BOAT_RESULT networkIndex;
+    BoatVenachainNetworkConfig networkConfig;
+
+    BoatVenachainWallet *wallet_p = NULL;
+
+    BoatIotSdkInit();
+    /* 1. Create onetime keypair */
+    keypair_config.prikey_format  = BOAT_KEYPAIR_PRIKEY_FORMAT_NATIVE;
+    UtilityHexToBin(g_binFormatKey, 32, g_venachain_private_key_buf, TRIMBIN_TRIM_NO, BOAT_FALSE);
+    keypair_config.prikey_content.field_ptr = g_binFormatKey;
+    keypair_config.prikey_content.field_len = 32;
+    keypair_config.prikey_genMode = BOAT_KEYPAIR_PRIKEY_GENMODE_EXTERNAL_INJECTION;
+	keypair_config.prikey_type	  = BOAT_KEYPAIR_PRIKEY_TYPE_SECP256K1;
+
+    keypair_index = BoatKeypairCreate(&keypair_config,NULL,BOAT_STORE_TYPE_RAM);
+    ck_assert_int_eq(keypair_index, 0);
+
+    /* 2. Create persist network */
+    networkConfig.chain_id             = 300;
+    networkConfig.eip155_compatibility = BOAT_FALSE;
+    memset(networkConfig.node_url_str,0U,BOAT_VENACHAIN_NODE_URL_MAX_LEN);
+    strncpy(networkConfig.node_url_str, TEST_VENACHAIN_NODE_URL, BOAT_VENACHAIN_NODE_URL_MAX_LEN - 1);
+
+    networkIndex = BoatVenachainNetworkCreate(&networkConfig,BOAT_STORE_TYPE_FLASH);
+    ck_assert_int_lt(networkIndex,5);
+    ck_assert_int_gt(networkIndex,0);
+
+    /* 3.Init onetime wallet */
+    wallet_p = BoatVenachainWalletInit(keypair_index,networkIndex);
+    ret = check_venachain_wallet(wallet_p,keypair_index,NULL,&keypair_config,networkIndex,&networkConfig);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    /* 4.Delete persist network*/
+    ret = BoATVenachainNetworkDelete(networkIndex);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    BoatIotSdkDeInit();
+}
+END_TEST
+
+START_TEST(test_005InitWallet_0003InitWalletSuccessPersistKeypairOneTimeNetwork) 
+{
+    BOAT_RESULT ret;
+
+    BOAT_RESULT keypair_index;
+    BoatKeypairPriKeyCtx_config keypair_config;
+
+    BOAT_RESULT networkIndex;
+    BoatVenachainNetworkConfig networkConfig;
+
+    BoatVenachainWallet *wallet_p = NULL;
+
+    BoatIotSdkInit();
+    /* 1. Create persist keypair */
+    keypair_config.prikey_format  = BOAT_KEYPAIR_PRIKEY_FORMAT_NATIVE;
+    UtilityHexToBin(g_binFormatKey, 32, g_venachain_private_key_buf, TRIMBIN_TRIM_NO, BOAT_FALSE);
+    keypair_config.prikey_content.field_ptr = g_binFormatKey;
+    keypair_config.prikey_content.field_len = 32;
+    keypair_config.prikey_genMode = BOAT_KEYPAIR_PRIKEY_GENMODE_EXTERNAL_INJECTION;
+	keypair_config.prikey_type	  = BOAT_KEYPAIR_PRIKEY_TYPE_SECP256K1;
+
+    keypair_index = BoatKeypairCreate(&keypair_config,NULL,BOAT_STORE_TYPE_FLASH);
+    ck_assert_int_eq(keypair_index, 0);
+
+    /* 2. Create onetime network */
+    networkConfig.chain_id             = 300;
+    networkConfig.eip155_compatibility = BOAT_FALSE;
+    memset(networkConfig.node_url_str,0U,BOAT_VENACHAIN_NODE_URL_MAX_LEN);
+    strncpy(networkConfig.node_url_str, TEST_VENACHAIN_NODE_URL, BOAT_VENACHAIN_NODE_URL_MAX_LEN - 1);
+
+    networkIndex = BoatVenachainNetworkCreate(&networkConfig,BOAT_STORE_TYPE_RAM);
+    ck_assert_int_eq(networkIndex, 0);
+
+    /* 3.Init onetime wallet */
+    wallet_p = BoatVenachainWalletInit(keypair_index,networkIndex);
+    ret = check_venachain_wallet(wallet_p,keypair_index,NULL,&keypair_config,networkIndex,&networkConfig);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    /* 4.Delete persist keypair*/
+    ret = BoATIotKeypairDelete(keypair_index);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    BoatIotSdkDeInit();
+}
+END_TEST
+
+START_TEST(test_005InitWallet_0004InitWalletSuccessPersistKeypairPersistNetwork) 
+{
+    BOAT_RESULT ret;
+
+    BOAT_RESULT keypair_index;
+    BoatKeypairPriKeyCtx_config keypair_config;
+
+    BOAT_RESULT networkIndex;
+    BoatVenachainNetworkConfig networkConfig;
+
+    BoatVenachainWallet *wallet_p = NULL;
+
+    BoatIotSdkInit();
+    /* 1. Create persist keypair */
+    keypair_config.prikey_format  = BOAT_KEYPAIR_PRIKEY_FORMAT_NATIVE;
+    UtilityHexToBin(g_binFormatKey, 32, g_venachain_private_key_buf, TRIMBIN_TRIM_NO, BOAT_FALSE);
+    keypair_config.prikey_content.field_ptr = g_binFormatKey;
+    keypair_config.prikey_content.field_len = 32;
+    keypair_config.prikey_genMode = BOAT_KEYPAIR_PRIKEY_GENMODE_EXTERNAL_INJECTION;
+	keypair_config.prikey_type	  = BOAT_KEYPAIR_PRIKEY_TYPE_SECP256K1;
+
+    keypair_index = BoatKeypairCreate(&keypair_config,NULL,BOAT_STORE_TYPE_FLASH);
+    ck_assert_int_eq(keypair_index, 0);
+
+    /* 2. Create persist network */
+    networkConfig.chain_id             = 300;
+    networkConfig.eip155_compatibility = BOAT_FALSE;
+    memset(networkConfig.node_url_str,0U,BOAT_VENACHAIN_NODE_URL_MAX_LEN);
+    strncpy(networkConfig.node_url_str, TEST_VENACHAIN_NODE_URL, BOAT_VENACHAIN_NODE_URL_MAX_LEN - 1);
+
+    networkIndex = BoatVenachainNetworkCreate(&networkConfig,BOAT_STORE_TYPE_FLASH);
+    ck_assert_int_eq(networkIndex, 0);
+
+    /* 3.Init wallet */
+    wallet_p = BoatVenachainWalletInit(keypair_index,networkIndex);
+    ret = check_venachain_wallet(wallet_p,keypair_index,NULL,&keypair_config,networkIndex,&networkConfig);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    /* 4.Delete persist keypair and network*/
+    ret = BoATIotKeypairDelete(keypair_index);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    ret = BoATVenachainNetworkDelete(networkIndex);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    BoatIotSdkDeInit();
+}
+END_TEST
+
+
+START_TEST(test_005InitWallet_0005InitWalletFailureWrongKeypair) 
+{
+    BOAT_RESULT ret;
+
+    BOAT_RESULT networkIndex;
+    BoatVenachainNetworkConfig networkConfig;
+    BoatVenachainWallet *wallet_p = NULL;
+
+    BoatIotSdkInit();
+
+    /* 1. Create onetime network */
+    networkConfig.chain_id             = 300;
+    networkConfig.eip155_compatibility = BOAT_FALSE;
+    memset(networkConfig.node_url_str,0U,BOAT_VENACHAIN_NODE_URL_MAX_LEN);
+    strncpy(networkConfig.node_url_str, TEST_VENACHAIN_NODE_URL, BOAT_VENACHAIN_NODE_URL_MAX_LEN - 1);
+
+    networkIndex = BoatVenachainNetworkCreate(&networkConfig,BOAT_STORE_TYPE_RAM);
+    ck_assert_int_eq(networkIndex, 0);
+
+    /* 2.Init wallet */
+    wallet_p = BoatVenachainWalletInit(5,networkIndex);
+    ck_assert_pstr_eq(wallet_p, NULL);
+
+    BoatIotSdkDeInit();
+}
+END_TEST
+
+
+START_TEST(test_005InitWallet_0006InitWalletFailureWrongNetwork) 
+{
+    BOAT_RESULT ret;
+
+    BOAT_RESULT keypair_index;
+    BoatKeypairPriKeyCtx_config keypair_config;
+
+    BoatVenachainWallet *wallet_p = NULL;
+
+    BoatIotSdkInit();
+    /* 1. Create onetime keypair */
+    keypair_config.prikey_format  = BOAT_KEYPAIR_PRIKEY_FORMAT_NATIVE;
+    UtilityHexToBin(g_binFormatKey, 32, g_venachain_private_key_buf, TRIMBIN_TRIM_NO, BOAT_FALSE);
+    keypair_config.prikey_content.field_ptr = g_binFormatKey;
+    keypair_config.prikey_content.field_len = 32;
+    keypair_config.prikey_genMode = BOAT_KEYPAIR_PRIKEY_GENMODE_EXTERNAL_INJECTION;
+	keypair_config.prikey_type	  = BOAT_KEYPAIR_PRIKEY_TYPE_SECP256K1;
+
+    keypair_index = BoatKeypairCreate(&keypair_config,NULL,BOAT_STORE_TYPE_RAM);
+    ck_assert_int_eq(keypair_index, 0);
+
+
+    /* 3.Init wallet */
+    wallet_p = BoatVenachainWalletInit(keypair_index,5);
+    ck_assert_pstr_eq(wallet_p, NULL);
+
+    BoatIotSdkDeInit();
+}
+END_TEST
+
+
+START_TEST(test_006DeInitWallet_0001DeInitWalletSuccessOneTimeKeypairOneTimeNetwork) 
+{
+    BOAT_RESULT ret;
+
+    BOAT_RESULT keypair_index;
+    BoatKeypairPriKeyCtx_config keypair_config;
+
+    BOAT_RESULT networkIndex;
+    BoatVenachainNetworkConfig networkConfig;
+
+    BoatVenachainWallet *wallet_p = NULL;
+
+    BoatIotSdkInit();
+    /* 1. Create onetime keypair */
+    keypair_config.prikey_format  = BOAT_KEYPAIR_PRIKEY_FORMAT_NATIVE;
+    UtilityHexToBin(g_binFormatKey, 32, g_venachain_private_key_buf, TRIMBIN_TRIM_NO, BOAT_FALSE);
+    keypair_config.prikey_content.field_ptr = g_binFormatKey;
+    keypair_config.prikey_content.field_len = 32;
+    keypair_config.prikey_genMode = BOAT_KEYPAIR_PRIKEY_GENMODE_EXTERNAL_INJECTION;
+	keypair_config.prikey_type	  = BOAT_KEYPAIR_PRIKEY_TYPE_SECP256K1;
+
+    keypair_index = BoatKeypairCreate(&keypair_config,NULL,BOAT_STORE_TYPE_RAM);
+    ck_assert_int_eq(keypair_index, 0);
+
+    /* 2. Create onetime network */
+    networkConfig.chain_id             = 300;
+    networkConfig.eip155_compatibility = BOAT_FALSE;
+    memset(networkConfig.node_url_str,0U,BOAT_VENACHAIN_NODE_URL_MAX_LEN);
+    strncpy(networkConfig.node_url_str, TEST_VENACHAIN_NODE_URL, BOAT_VENACHAIN_NODE_URL_MAX_LEN - 1);
+
+    networkIndex = BoatVenachainNetworkCreate(&networkConfig,BOAT_STORE_TYPE_RAM);
+    ck_assert_int_eq(networkIndex, 0);
+
+    /* 3.Init onetime wallet */
+    wallet_p = BoatVenachainWalletInit(keypair_index,networkIndex);
+    ret = check_venachain_wallet(wallet_p,keypair_index,NULL,&keypair_config,networkIndex,&networkConfig);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+
+    /* 4.DeInit wallet*/
+    BoatVenachainWalletDeInit(wallet_p);
+    ck_assert_pstr_eq(wallet_p, NULL);
+
+    BoatIotSdkDeInit();
+}
+END_TEST
+
+START_TEST(test_006DeInitWallet_0002DeInitWalletSuccessOneTimeKeypairPersistNetwork) 
+{
+    BOAT_RESULT ret;
+
+    BOAT_RESULT keypair_index;
+    BoatKeypairPriKeyCtx_config keypair_config;
+
+    BOAT_RESULT networkIndex;
+    BoatVenachainNetworkConfig networkConfig;
+
+    BoatVenachainWallet *wallet_p = NULL;
+
+    BoatIotSdkInit();
+    /* 1. Create onetime keypair */
+    keypair_config.prikey_format  = BOAT_KEYPAIR_PRIKEY_FORMAT_NATIVE;
+    UtilityHexToBin(g_binFormatKey, 32, g_venachain_private_key_buf, TRIMBIN_TRIM_NO, BOAT_FALSE);
+    keypair_config.prikey_content.field_ptr = g_binFormatKey;
+    keypair_config.prikey_content.field_len = 32;
+    keypair_config.prikey_genMode = BOAT_KEYPAIR_PRIKEY_GENMODE_EXTERNAL_INJECTION;
+	keypair_config.prikey_type	  = BOAT_KEYPAIR_PRIKEY_TYPE_SECP256K1;
+
+    keypair_index = BoatKeypairCreate(&keypair_config,NULL,BOAT_STORE_TYPE_RAM);
+    ck_assert_int_eq(keypair_index, 0);
+
+    /* 2. Create persist network */
+    networkConfig.chain_id             = 300;
+    networkConfig.eip155_compatibility = BOAT_FALSE;
+    memset(networkConfig.node_url_str,0U,BOAT_VENACHAIN_NODE_URL_MAX_LEN);
+    strncpy(networkConfig.node_url_str, TEST_VENACHAIN_NODE_URL, BOAT_VENACHAIN_NODE_URL_MAX_LEN - 1);
+
+    networkIndex = BoatVenachainNetworkCreate(&networkConfig,BOAT_STORE_TYPE_FLASH);
+    ck_assert_int_lt(networkIndex,5);
+    ck_assert_int_gt(networkIndex,0);
+
+    /* 3.Init onetime wallet */
+    wallet_p = BoatVenachainWalletInit(keypair_index,networkIndex);
+    ret = check_venachain_wallet(wallet_p,keypair_index,NULL,&keypair_config,networkIndex,&networkConfig);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    /* 4.Deinit wallet*/
+    BoatVenachainWalletDeInit(wallet_p);
+    ck_assert_pstr_eq(wallet_p, NULL);
+
+    /* 5.Delete persist network*/
+    ret = BoATVenachainNetworkDelete(networkIndex);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    BoatIotSdkDeInit();
+}
+END_TEST
+
+START_TEST(test_006DeInitWallet_0003DeInitWalletSuccessPersistKeypairOneTimeNetwork) 
+{
+    BOAT_RESULT ret;
+
+    BOAT_RESULT keypair_index;
+    BoatKeypairPriKeyCtx_config keypair_config;
+
+    BOAT_RESULT networkIndex;
+    BoatVenachainNetworkConfig networkConfig;
+
+    BoatVenachainWallet *wallet_p = NULL;
+
+    BoatIotSdkInit();
+    /* 1. Create persist keypair */
+    keypair_config.prikey_format  = BOAT_KEYPAIR_PRIKEY_FORMAT_NATIVE;
+    UtilityHexToBin(g_binFormatKey, 32, g_venachain_private_key_buf, TRIMBIN_TRIM_NO, BOAT_FALSE);
+    keypair_config.prikey_content.field_ptr = g_binFormatKey;
+    keypair_config.prikey_content.field_len = 32;
+    keypair_config.prikey_genMode = BOAT_KEYPAIR_PRIKEY_GENMODE_EXTERNAL_INJECTION;
+	keypair_config.prikey_type	  = BOAT_KEYPAIR_PRIKEY_TYPE_SECP256K1;
+
+    keypair_index = BoatKeypairCreate(&keypair_config,NULL,BOAT_STORE_TYPE_FLASH);
+    ck_assert_int_eq(keypair_index, 0);
+
+    /* 2. Create onetime network */
+    networkConfig.chain_id             = 300;
+    networkConfig.eip155_compatibility = BOAT_FALSE;
+    memset(networkConfig.node_url_str,0U,BOAT_VENACHAIN_NODE_URL_MAX_LEN);
+    strncpy(networkConfig.node_url_str, TEST_VENACHAIN_NODE_URL, BOAT_VENACHAIN_NODE_URL_MAX_LEN - 1);
+
+    networkIndex = BoatVenachainNetworkCreate(&networkConfig,BOAT_STORE_TYPE_RAM);
+    ck_assert_int_eq(networkIndex, 0);
+
+    /* 3.Init onetime wallet */
+    wallet_p = BoatVenachainWalletInit(keypair_index,networkIndex);
+    ret = check_venachain_wallet(wallet_p,keypair_index,NULL,&keypair_config,networkIndex,&networkConfig);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    /* 4.Deinit wallet*/
+    BoatVenachainWalletDeInit(wallet_p);
+    ck_assert_pstr_eq(wallet_p, NULL);
+
+    /* 5.Delete persist keypair*/
+    ret = BoATIotKeypairDelete(keypair_index);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    BoatIotSdkDeInit();
+}
+END_TEST
+
+START_TEST(test_006DeInitWallet_0004DeInitWalletSuccessPersistKeypairPersistNetwork) 
+{
+    BOAT_RESULT ret;
+
+    BOAT_RESULT keypair_index;
+    BoatKeypairPriKeyCtx_config keypair_config;
+
+    BOAT_RESULT networkIndex;
+    BoatVenachainNetworkConfig networkConfig;
+
+    BoatVenachainWallet *wallet_p = NULL;
+
+    BoatIotSdkInit();
+    /* 1. Create persist keypair */
+    keypair_config.prikey_format  = BOAT_KEYPAIR_PRIKEY_FORMAT_NATIVE;
+    UtilityHexToBin(g_binFormatKey, 32, g_venachain_private_key_buf, TRIMBIN_TRIM_NO, BOAT_FALSE);
+    keypair_config.prikey_content.field_ptr = g_binFormatKey;
+    keypair_config.prikey_content.field_len = 32;
+    keypair_config.prikey_genMode = BOAT_KEYPAIR_PRIKEY_GENMODE_EXTERNAL_INJECTION;
+	keypair_config.prikey_type	  = BOAT_KEYPAIR_PRIKEY_TYPE_SECP256K1;
+
+    keypair_index = BoatKeypairCreate(&keypair_config,NULL,BOAT_STORE_TYPE_FLASH);
+    ck_assert_int_eq(keypair_index, 0);
+
+    /* 2. Create persist network */
+    networkConfig.chain_id             = 300;
+    networkConfig.eip155_compatibility = BOAT_FALSE;
+    memset(networkConfig.node_url_str,0U,BOAT_VENACHAIN_NODE_URL_MAX_LEN);
+    strncpy(networkConfig.node_url_str, TEST_VENACHAIN_NODE_URL, BOAT_VENACHAIN_NODE_URL_MAX_LEN - 1);
+
+    networkIndex = BoatVenachainNetworkCreate(&networkConfig,BOAT_STORE_TYPE_FLASH);
+    ck_assert_int_eq(networkIndex, 0);
+
+    /* 3.Init wallet */
+    wallet_p = BoatVenachainWalletInit(keypair_index,networkIndex);
+    ret = check_venachain_wallet(wallet_p,keypair_index,NULL,&keypair_config,networkIndex,&networkConfig);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    /* 4.Deinit wallet*/
+    BoatVenachainWalletDeInit(wallet_p);
+    ck_assert_pstr_eq(wallet_p, NULL);
+
+    /* 5.Delete persist keypair and network*/
+    ret = BoATIotKeypairDelete(keypair_index);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    ret = BoATVenachainNetworkDelete(networkIndex);
+    ck_assert_int_eq(ret, BOAT_SUCCESS);
+
+    BoatIotSdkDeInit();
+}
+END_TEST
+
 Suite *make_wallet_suite(void) 
 {
     /* Create Suite */
@@ -98,7 +501,16 @@ Suite *make_wallet_suite(void)
     suite_add_tcase(s_wallet, tc_wallet_api);       
     /* Test cases are added to the test set */
     tcase_add_test(tc_wallet_api, test_005InitWallet_0001InitWalletSuccessOneTimeKeypairOneTimeNetwork);
+    tcase_add_test(tc_wallet_api, test_005InitWallet_0002InitWalletSuccessOneTimeKeypairPersistNetwork);
+    tcase_add_test(tc_wallet_api, test_005InitWallet_0003InitWalletSuccessPersistKeypairOneTimeNetwork);
+    tcase_add_test(tc_wallet_api, test_005InitWallet_0004InitWalletSuccessPersistKeypairPersistNetwork);
+    tcase_add_test(tc_wallet_api, test_005InitWallet_0005InitWalletFailureWrongKeypair);
+    tcase_add_test(tc_wallet_api, test_005InitWallet_0006InitWalletFailureWrongNetwork);
 
+    tcase_add_test(tc_wallet_api, test_006DeInitWallet_0001DeInitWalletSuccessOneTimeKeypairOneTimeNetwork);
+    tcase_add_test(tc_wallet_api, test_006DeInitWallet_0002DeInitWalletSuccessOneTimeKeypairPersistNetwork);
+    tcase_add_test(tc_wallet_api, test_006DeInitWallet_0003DeInitWalletSuccessPersistKeypairOneTimeNetwork);
+    tcase_add_test(tc_wallet_api, test_006DeInitWallet_0004DeInitWalletSuccessPersistKeypairPersistNetwork);
 
     return s_wallet;
 }
