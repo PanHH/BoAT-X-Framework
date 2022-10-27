@@ -22,8 +22,6 @@
 #include "boattypes.h"
 #include "protocolapi/api_venachain.h"
 
-extern BOAT_RESULT venachainWalletPrepare(void);
-
 extern char g_venachain_private_key_buf[1024];
 extern BoatVenachainWallet *g_venachain_wallet_ptr;
 extern BoatKeypairPriKeyCtx_config g_keypair_config;
