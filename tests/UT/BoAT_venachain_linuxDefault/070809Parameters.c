@@ -22,7 +22,7 @@
 
 #define TEST_RECIPIENT_ADDRESS      "0xde4c806b372Df8857C97cF36A08D528bB8E261Bd"
 
-BOAT_RESULT venachainOnetimeWalletPrepare(BoatVenachainWallet *wallet_p)
+__BOATSTATIC BOAT_RESULT venachainOnetimeWalletPrepare(BoatVenachainWallet *wallet_p)
 {
     BOAT_RESULT index;
     BoatKeypairPriKeyCtx_config keypair_config;
