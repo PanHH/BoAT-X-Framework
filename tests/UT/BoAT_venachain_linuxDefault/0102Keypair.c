@@ -20,7 +20,7 @@
 #define TEST_GAS_LIMIT              "0x6691B7"
 #define TEST_GAS_PRICE              "0x4A817C800"
 #define TEST_IS_SYNC_TX             BOAT_TRUE
-#define TEST_RECIPIENT_ADDRESS      "0xde4c806b372Df8857C97cF36A08D528bB8E261Bd"
+#define TEST_RECIPIENT_ADDRESS      "0x3e3bd84cf33796cb55cc713d5134597eb809fcc3"
 
 BUINT8 g_binFormatKey[32];
 
