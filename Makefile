@@ -6,7 +6,7 @@ BOAT_BUILD_DIR := $(BOAT_BASE_DIR)/build
 
 # Set chain support
 # Set to 1 to enable releated chain, to 0 to disable
-BOAT_PROTOCOL_USE_ETHEREUM   ?= 1
+BOAT_PROTOCOL_USE_ETHEREUM   ?= 0
 BOAT_PROTOCOL_USE_PLATON     ?= 0
 BOAT_PROTOCOL_USE_PLATONE    ?= 0
 BOAT_PROTOCOL_USE_FISCOBCOS  ?= 0
